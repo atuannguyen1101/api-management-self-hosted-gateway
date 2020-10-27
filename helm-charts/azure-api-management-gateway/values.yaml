@@ -19,6 +19,8 @@ service:
 gateway:
   endpoint: ""
   authKey: ""
+  httpPort: 8080
+  httpsPort: 8081
 
 dapr:
   enabled: false
@@ -41,6 +43,27 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+telemetry:
+  metrics:
+    local: "none"
+    localStatsd:
+      endpoint: "10.0.41.179:8125"
+      sampling: 0
+      tagFormat: "none"
+    cloud: false
+  logs:
+    std: "none"
+    local: "none"
+    localConfig:
+      localsyslog:
+        endpoint: "/dev/log"
+        facility: 7
+      rfc5424:
+        endpoint: "/dev/log"
+        facility: 7
+      journal:
+        endpoint: "/dev/log"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
