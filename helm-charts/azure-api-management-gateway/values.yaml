@@ -54,7 +54,7 @@ telemetry:
     cloud: false
   logs:
     std: "none"
-    local: "none"
+    local: "auto"
     localConfig:
       localsyslog:
         endpoint: "/dev/log"
