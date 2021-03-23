@@ -4,6 +4,13 @@
 
 replicaCount: 1
 
+global: 
+  isProxyEnabled: false
+  httpProxy: ""
+  httpsProxy: ""
+  noProxy: ""
+  proxyCert: ""
+
 image:
   repository: mcr.microsoft.com/azure-api-management/gateway
   tag: latest
@@ -14,7 +21,7 @@ fullnameOverride: ""
 
 service:
   type: ClusterIP
-  port: 88
+  port: 5000
 
 gateway:
   endpoint: ""
