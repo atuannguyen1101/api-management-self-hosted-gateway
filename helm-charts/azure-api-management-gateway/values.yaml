@@ -13,9 +13,10 @@ global:
 
 image:
   repository: mcr.microsoft.com/azure-api-management/gateway
-  tag: latest
   pullPolicy: IfNotPresent
+  tag: 
 
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
@@ -36,6 +37,11 @@ dapr:
   logging:
     useJsonOutput: true
     level: info
+
+service:
+  type: ClusterIP
+  port: 88
+  annotations: {}
 
 ingress:
   enabled: false
