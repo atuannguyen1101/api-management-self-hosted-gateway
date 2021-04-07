@@ -4,12 +4,13 @@
 
 replicaCount: 1
 
-global: 
-  isProxyEnabled: false
-  httpProxy: ""
-  httpsProxy: ""
-  noProxy: ""
-  proxyCert: ""
+Azure:
+  proxySettings:
+    isProxyEnabled: false
+    httpProxy: ""
+    httpsProxy: ""
+    noProxy: ""
+    proxyCert: ""
 
 image:
   repository: mcr.microsoft.com/azure-api-management/gateway
@@ -59,24 +60,24 @@ ingress:
 
 telemetry:
   metrics:
-    local: "none"
+    local: 
     localStatsd:
-      endpoint: "10.0.41.179:8125"
-      sampling: 0
-      tagFormat: "none"
-    cloud: false
+      endpoint: 
+      sampling: 
+      tagFormat: 
+    cloud: 
   logs:
-    std: "none"
-    local: "auto"
+    std: 
+    local: 
     localConfig:
       localsyslog:
-        endpoint: "/dev/log"
-        facility: 7
+        endpoint: 
+        facility: 
       rfc5424:
-        endpoint: "/dev/log"
-        facility: 7
+        endpoint: 
+        facility: 
       journal:
-        endpoint: "/dev/log"
+        endpoint: 
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

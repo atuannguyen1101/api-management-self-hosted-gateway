@@ -38,10 +38,14 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          lifecycle:
+            postStart:
+              exec:
+                command: ["/bin/bash", "-c", "update-ca-certificates"]
           envFrom:
             - configMapRef:
                 name: {{ include "azure-api-management-gateway.fullname" . }}
-          {{ if .Values.global.isProxyEnabled }}
+          {{ if .Values.Azure.proxySettings.isProxyEnabled }}
             - secretRef:
                 name: proxy-config
           {{ end }}
@@ -50,23 +54,14 @@ spec:
               containerPort: {{ .Values.gateway.httpPort | int }}
             - name: https
               containerPort: {{ .Values.gateway.httpsPort | int }}
-          readinessProbe:
-            httpGet:
-              path: /internal-status-0123456789abcdef
-              port: http
-              scheme: HTTP
-            initialDelaySeconds: 0
-            periodSeconds: 5
-            failureThreshold: 3
-            successThreshold: 1
-        {{- if  and .Values.global.isProxyEnabled .Values.global.proxyCert }}
+        {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
           volumeMounts:
             - name: ssl-certs
               mountPath: /etc/ssl/certs/
               readOnly: false
             - mountPath: /usr/local/share/ca-certificates/proxy-cert.crt
               subPath: proxy-cert.crt
-              name: proxy-certstore  
+              name: proxy-certstore
         {{- end }}
           env:
             - name: config.service.auth
@@ -77,7 +72,7 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       
-    {{- if  and .Values.global.isProxyEnabled .Values.global.proxyCert }}
+    {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
       volumes:
           - name: proxy-certstore
             secret:
