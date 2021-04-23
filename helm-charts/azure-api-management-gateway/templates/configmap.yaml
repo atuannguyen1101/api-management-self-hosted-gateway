@@ -9,6 +9,7 @@ metadata:
     app.kubernetes.io/managed-by: {{ .Release.Service }}
 data:
   config.service.endpoint: {{ .Values.gateway.endpoint | quote }}
+  telemetry.logs.cloud.endpoint: "127.0.0.1:5001"
 {{ if .Values.telemetry.metrics.local -}}
   telemetry.metrics.local: {{ .Values.telemetry.metrics.local | quote }}
 {{ end }}
@@ -45,3 +46,57 @@ data:
 {{ if .Values.telemetry.logs.localConfig.journal.endpoint -}}
   telemetry.logs.local.journal.endpoint: {{ .Values.telemetry.logs.localConfig.journal.endpoint | quote }}
 {{ end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-monitoring-env
+data:
+  MONITORING_GCS_ENVIRONMENT: x
+  MONITORING_GCS_ACCOUNT: x
+  MONITORING_GCS_REGION: x
+  MONITORING_GCS_AUTH_ID_TYPE: x
+  FLUENTD_PORT: "5001"
+  LOCAL_BINDING: "0"
+  customResourceId: {{ .Values.monitoring.customResourceId }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}-monitoring-config
+data:
+  mdsd.xml: >
+    <?xml version="1.0" encoding="utf-8"?>
+    <MonitoringManagement version="1.0" namespace="TuxTest" eventVersion="1" timestamp="2014-10-01T20:00:00.000">
+
+      <Management eventVolume="Large" defaultRetentionInDays="90">
+        <Identity>
+          <IdentityComponent name="Tenant">myTestTenant</IdentityComponent>
+          <IdentityComponent name="Host" useComputerName="true" />
+        </Identity>
+        <AgentResourceUsage diskQuotaInMB="50000" />
+      </Management>
+
+      <Sources>
+        <Source name="ProxyRequest" dynamic_schema="true" />
+      </Sources>
+
+      <Events>
+        <MdsdEvents>
+          <MdsdEventSource source="ProxyRequest">
+            <RouteEvent eventName="ProxyRequest_event" duration="PT1M" priority="High"  storeType="Local" />
+          </MdsdEventSource>
+        </MdsdEvents>
+      </Events>
+
+      <EventStreamingAnnotations>
+        <EventStreamingAnnotation name="ProxyRequest_event">
+          <OMS>
+            <Content><![CDATA[
+              <Config
+                workspaceName="workspace" workspaceId={{ .Values.monitoring.workspaceId | quote }} logType="APIMANAGEMENT_SELFHOSTED_GATEWAYLOGS" ipName="LogManagement" />
+              ]]></Content>
+          </OMS>
+        </EventStreamingAnnotation>
+      </EventStreamingAnnotations>
+    </MonitoringManagement>

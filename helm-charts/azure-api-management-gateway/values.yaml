@@ -24,12 +24,19 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   port: 5000
+  nodePort:
+  annotations: {}
 
 gateway:
   endpoint: ""
   authKey: ""
   httpPort: 8080
   httpsPort: 8081
+
+monitoring:
+  ingestionKey:
+  workspaceId:
+  customResourceId:
 
 dapr:
   enabled: false
@@ -38,11 +45,6 @@ dapr:
   logging:
     useJsonOutput: true
     level: info
-
-service:
-  type: ClusterIP
-  port: 88
-  annotations: {}
 
 ingress:
   enabled: false

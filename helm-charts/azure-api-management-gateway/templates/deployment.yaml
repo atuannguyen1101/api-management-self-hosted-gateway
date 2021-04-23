@@ -35,20 +35,39 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
+        {{- if  and .Values.monitoring.workspaceId .Values.monitoring.ingestionKey }}
+        - name: {{ .Chart.Name }}-monitoring
+          image: linuxgeneva-microsoft.azurecr.io/genevamdsd
+          ports:
+          - name: fluentd
+            containerPort: 5001
+          env:
+          - name: workspace_key
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Chart.Name }}-monitoring-key
+                key: monitoring-key
+          envFrom:
+          - configMapRef:
+              name: {{ .Chart.Name }}-monitoring-env
+          volumeMounts:
+            - mountPath: /geneva/geneva_auth
+              name: monitoring-temp
+            - mountPath: /geneva/geneva_logs
+              name: monitoring-temp
+            - mountPath: /geneva/geneva_config
+              name: monitoring-config
+        {{- end }} 
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/bash", "-c", "update-ca-certificates"]
           envFrom:
             - configMapRef:
                 name: {{ include "azure-api-management-gateway.fullname" . }}
           {{ if .Values.Azure.proxySettings.isProxyEnabled }}
             - secretRef:
                 name: proxy-config
-          {{ end }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.gateway.httpPort | int }}
@@ -72,14 +91,22 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       
-    {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
+    
       volumes:
-          - name: proxy-certstore
-            secret:
-              secretName: proxy-cert
-          - name: ssl-certs
-            emptyDir: {}
-    {{- end }}
+        {{- if  and .Values.Azure.proxySettings.isProxyEnabled .Values.Azure.proxySettings.proxyCert }}
+        - name: proxy-certstore
+          secret:
+            secretName: proxy-cert
+        - name: ssl-certs
+          emptyDir: {}
+        {{- end }}
+        {{- if  .Values.monitoring.workspaceId }}
+        - name: monitoring-temp
+          emptyDir: {}
+        - name: monitoring-config
+          configMap:
+            name: {{ .Chart.Name }}-monitoring-config
+        {{- end }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
