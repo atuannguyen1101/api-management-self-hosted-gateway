@@ -12,40 +12,40 @@ data:
   telemetry.logs.cloud.endpoint: "127.0.0.1:5001"
 {{ if .Values.telemetry.metrics.local -}}
   telemetry.metrics.local: {{ .Values.telemetry.metrics.local | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.metrics.localStatsd.endpoint -}}
   telemetry.metrics.local.statsd.endpoint: {{ .Values.telemetry.metrics.localStatsd.endpoint | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.metrics.localStatsd.sampling -}}
   telemetry.metrics.local.statsd.sampling: {{ .Values.telemetry.metrics.localStatsd.sampling | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.metrics.localStatsd.tagFormat -}}
   telemetry.metrics.local.statsd.tag-format: {{ .Values.telemetry.metrics.localStatsd.tagFormat | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.metrics.cloud -}}
   telemetry.metrics.cloud: {{ .Values.telemetry.metrics.cloud | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.std -}}
   telemetry.logs.std: {{ .Values.telemetry.logs.std | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.local -}}
   telemetry.logs.local: {{ .Values.telemetry.logs.local | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.localConfig.localsyslog.endpoint -}}
   telemetry.logs.local.localsyslog.endpoint: {{ .Values.telemetry.logs.localConfig.localsyslog.endpoint | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.localConfig.localsyslog.facility -}}
   telemetry.logs.local.localsyslog.facility: {{ .Values.telemetry.logs.localConfig.localsyslog.facility | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.localConfig.rfc5424.endpoint -}}
   telemetry.logs.local.rfc5424.endpoint: {{ .Values.telemetry.logs.localConfig.rfc5424.endpoint | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.localConfig.rfc5424.facility -}}
   telemetry.logs.local.rfc5424.facility: {{ .Values.telemetry.logs.localConfig.rfc5424.facility | quote }}
-{{ end }}
+{{- end }}
 {{ if .Values.telemetry.logs.localConfig.journal.endpoint -}}
   telemetry.logs.local.journal.endpoint: {{ .Values.telemetry.logs.localConfig.journal.endpoint | quote }}
-{{ end }}
+{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -58,7 +58,9 @@ data:
   MONITORING_GCS_AUTH_ID_TYPE: x
   FLUENTD_PORT: "5001"
   LOCAL_BINDING: "0"
+  {{ if .Values.monitoring.customResourceId -}}
   customResourceId: {{ .Values.monitoring.customResourceId }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap

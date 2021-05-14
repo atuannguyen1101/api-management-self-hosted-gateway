@@ -34,9 +34,9 @@ gateway:
   httpsPort: 8081
 
 monitoring:
-  ingestionKey:
-  workspaceId:
-  customResourceId:
+  ingestionKey: ""
+  workspaceId: ""
+  customResourceId: ""
 
 dapr:
   enabled: false
